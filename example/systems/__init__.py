@@ -6,21 +6,22 @@ from engine.system import System
 
 class MovementSystem(System):
     def update(self, time):
-        component_class = 'Position'
         em = self.entity_manager
-        for entity in em.get_entities_by_component_class(component_class):
-            component = em.get_component(component_class, entity)
+        for entity in em.get_entities_by_component_class('Position'):
+            position = em.get_component('Position', entity)
+            velocity = em.get_component('Velocity', entity)
 
-            component.x += component.velocity_x
-            component.y += component.velocity_y
+            if velocity:
+                position.x += velocity.velocity_x
+                position.y += velocity.velocity_y
 
-            component.velocity_x = 0
-            component.velocity_y = 0
+                velocity.velocity_x = 0
+                velocity.velocity_y = 0
 
             render = em.get_component('Display', entity)
             if render:
-                render.x = component.x
-                render.y = component.y
+                render.x = position.x
+                render.y = position.y
 
 
 class RenderSystem(System):
@@ -29,54 +30,51 @@ class RenderSystem(System):
         self.maxyx = maxyx
 
     def update(self, time):
-        component_class = 'Display'
         em = self.entity_manager
-        for entity in em.get_entities_by_component_class(component_class):
-            component = em.get_component(component_class, entity)
+        for entity in em.get_entities_by_component_class('Display'):
+            render = em.get_component('Display', entity)
             position = em.get_component('Position', entity)
 
-            if component.y >= self.maxyx[0]:
-                component.y = 0
+            if render.y >= self.maxyx[0]:
+                render.y = 0
                 position.y = 0
-            if component.y < 0:
-                component.y = 0
+            if render.y < 0:
+                render.y = 0
                 position.y = 0
-            if component.x >= self.maxyx[1]:
-                component.x = 0
+            if render.x >= self.maxyx[1]:
+                render.x = 0
                 position.x = 0
-            if component.x < 0:
-                component.x = 0
+            if render.x < 0:
+                render.x = 0
                 position.x = 0
 
-            component.view.draw(component, time)
+            render.view.draw(render, time)
 
 
 import curses
 
 
 class InputSystem(System):
-    component_class = 'Input'
-
     def update(self, time):
         em = self.entity_manager
 
-        for entity in em.get_entities_by_component_class(self.component_class):
-            component = em.get_component(self.component_class, entity)
-            position = em.get_component('Position', entity)
+        for entity in em.get_entities_by_component_class('Input'):
+            input = em.get_component('Input', entity)
+            velocity = em.get_component('Velocity', entity)
 
-            if not position:
+            if not velocity:
                 continue
 
             try:
-                key = component.window.get_wch()
+                key = input.window.get_wch()
             except:
                 return
 
             if key == curses.KEY_UP:
-                position.velocity_y = -1
+                velocity.velocity_y = -1
             if key == curses.KEY_DOWN:
-                position.velocity_y = 1
+                velocity.velocity_y = 1
             elif key == curses.KEY_RIGHT:
-                position.velocity_x = 1
+                velocity.velocity_x = 1
             elif key == curses.KEY_LEFT:
-                position.velocity_x = -1
+                velocity.velocity_x = -1

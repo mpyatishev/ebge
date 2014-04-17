@@ -22,9 +22,11 @@ class SpaceShipImage(Image):
     def __init__(self, window):
         super().__init__(window)
 
-        self.sprites = [()] * 3
+        self.frame_time = 0.09
+        self.frame_count = 3
+        self.frames = [()] * self.frame_count
 
-        self.sprites[0] = (
+        self.frames[0] = (
             (0, 1, 'O'),
             (1, 1, '|'),
             (1, 2, '='),
@@ -36,7 +38,7 @@ class SpaceShipImage(Image):
             # (2, 0, '/'),
             # (2, 2, '\\'),
         )
-        self.sprites[1] = (
+        self.frames[1] = (
             (0, 1, 'O'),
             (1, 1, '|'),
             (1, 2, '='),
@@ -45,7 +47,7 @@ class SpaceShipImage(Image):
             (2, 1, '|'),
             (2, 2, '\\'),
         )
-        self.sprites[2] = (
+        self.frames[2] = (
             (0, 1, 'O'),
             (1, 1, '|'),
             (1, 2, '='),
@@ -57,20 +59,19 @@ class SpaceShipImage(Image):
         )
 
     def draw(self, position, time):
-        import time
         try:
             y = int(position.y)
             x = int(position.x)
 
-            for sprite in self.sprites:
+            for sprite in self.frames:
                 for el in sprite:
                     self.window.addstr(y + el[0], x + el[1], el[2])
+                self.window.addstr(y + 3, x, 'y = %s, x = %s' % (y, x))
                 self.window.refresh()
-                time.sleep(.9)
-            for el in self.sprites[0]:
+                sleep(abs(self.frame_time / self.frame_count))
+            for el in self.frames[0]:
                 self.window.addstr(y + el[0], x + el[1], el[2])
 
-            self.window.addstr(y + 3, x, 'y = %s, x = %s' % (y, x))
         except Exception as e:
             self.window.addstr(str(e))
             self.window.addstr(str(position.y))
@@ -83,6 +84,7 @@ class RockImage(Image):
     def draw(self, position, time):
         try:
             self.window.addstr(int(position.y), int(position.x), '*')
+            self.window.refresh()
         except Exception as e:
             print(e, int(position.y), int(position.x))
 
@@ -104,6 +106,7 @@ def main(window):
     spaceship = em.create_entity(name='SpaceShip')
     em.add_component(components.Input(window=window), spaceship)
     em.add_component(components.Position(x=1, y=10), spaceship)
+    em.add_component(components.Velocity(), spaceship)
     em.add_component(components.Display(view=SpaceShipImage(window)), spaceship)
 
     for i in range(5):
@@ -118,8 +121,6 @@ def main(window):
         window.clear()
         engine.update(time)
         time += 1
-        window.refresh()
-        sleep(.03)
 
     # window.getkey()
 

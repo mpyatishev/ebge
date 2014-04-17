@@ -8,8 +8,6 @@ class Position(Component):
         self.x = x
         self.y = y
         self.rotation = rotation
-        self.velocity_x = 0
-        self.velocity_y = 0
 
 
 class Velocity(Component):
