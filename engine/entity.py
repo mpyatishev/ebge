@@ -52,6 +52,11 @@ class EntityManager:
             return self.components[component_class][entity.eid]
         return None
 
+    def remove_component(self, component_class, entity):
+        if component_class in self.components\
+                and entity.eid in self.components[component_class]:
+            del self.components[component_class][entity.eid]
+
     def get_entities_by_component_class(self, component_class):
         if component_class in self.components:
             return [e for e in self.entities.values()

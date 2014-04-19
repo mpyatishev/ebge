@@ -11,6 +11,7 @@ import systems
 
 from engine.engine import Engine
 from engine.entity import EntityManager
+from engine.fsm import State
 
 
 class Image:
@@ -18,12 +19,12 @@ class Image:
         self.window = window
 
 
-class SpaceShipImage(Image):
+class ManStandImage(Image):
     def __init__(self, window):
         super().__init__(window)
 
         self.frame_time = 0.09
-        self.frame_count = 3
+        self.frame_count = 1
         self.frames = [()] * self.frame_count
 
         self.frames[0] = (
@@ -38,7 +39,32 @@ class SpaceShipImage(Image):
             # (2, 0, '/'),
             # (2, 2, '\\'),
         )
-        self.frames[1] = (
+
+    def draw(self, position, time):
+        try:
+            y = int(position.y)
+            x = int(position.x)
+
+            for el in self.frames[0]:
+                self.window.addstr(y + el[0], x + el[1], el[2])
+
+        except Exception as e:
+            self.window.addstr(str(e))
+            self.window.addstr(str(position.y))
+            self.window.addstr(str(position.x))
+            self.window.refresh()
+            # self.window.getkey()
+
+
+class ManWalkImage(Image):
+    def __init__(self, window):
+        super().__init__(window)
+
+        self.frame_time = 0.09
+        self.frame_count = 2
+        self.frames = [()] * self.frame_count
+
+        self.frames[0] = (
             (0, 1, 'O'),
             (1, 1, '|'),
             (1, 2, '='),
@@ -47,7 +73,7 @@ class SpaceShipImage(Image):
             (2, 1, '|'),
             (2, 2, '\\'),
         )
-        self.frames[2] = (
+        self.frames[1] = (
             (0, 1, 'O'),
             (1, 1, '|'),
             (1, 2, '='),
@@ -63,14 +89,8 @@ class SpaceShipImage(Image):
             y = int(position.y)
             x = int(position.x)
 
-            for sprite in self.frames:
-                for el in sprite:
-                    self.window.addstr(y + el[0], x + el[1], el[2])
-                self.window.addstr(y + 3, x, 'y = %s, x = %s' % (y, x))
-                self.window.refresh()
-                sleep(abs(self.frame_time / self.frame_count))
-            for el in self.frames[0]:
-                self.window.addstr(y + el[0], x + el[1], el[2])
+            for frame in self.frames[time % self.frame_count]:
+                self.window.addstr(y + frame[0], x + frame[1], frame[2])
 
         except Exception as e:
             self.window.addstr(str(e))
@@ -84,7 +104,6 @@ class RockImage(Image):
     def draw(self, position, time):
         try:
             self.window.addstr(int(position.y), int(position.x), '*')
-            self.window.refresh()
         except Exception as e:
             print(e, int(position.y), int(position.x))
 
@@ -103,11 +122,13 @@ def main(window):
     engine.add_system(systems.MovementSystem(em), 1)
     engine.add_system(systems.RenderSystem(em, maxyx), 2)
 
-    spaceship = em.create_entity(name='SpaceShip')
-    em.add_component(components.Input(window=window), spaceship)
-    em.add_component(components.Position(x=1, y=10), spaceship)
-    em.add_component(components.Velocity(), spaceship)
-    em.add_component(components.Display(view=SpaceShipImage(window)), spaceship)
+    man_stand_view = ManStandImage(window)
+    man_walk_view = ManWalkImage(window)
+    man = em.create_entity(name='Man')
+    em.add_component(components.Input(window=window), man)
+    em.add_component(components.Position(x=1, y=10), man)
+    em.add_component(components.Velocity(), man)
+    em.add_component(components.Display(view=man_stand_view), man)
 
     for i in range(5):
         rock = em.create_entity(name='Rock')
@@ -117,9 +138,22 @@ def main(window):
         em.add_component(components.Display(view=RockImage(window)), rock)
 
     time = 0
+    prev_state = State.state
     while True:
-        window.clear()
+        window.erase()
+
+        if State.state != prev_state:
+            prev_state = State.state
+
+            display = em.get_component('Display', man)
+            if State.state == State.STAND:
+                display.view = man_stand_view
+            elif State.state == State.WALK:
+                display.view = man_walk_view
+
         engine.update(time)
+        window.refresh()
+        sleep(0.04)
         time += 1
 
     # window.getkey()

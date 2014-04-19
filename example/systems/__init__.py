@@ -2,6 +2,7 @@
 
 
 from engine.system import System
+from engine.fsm import State
 
 
 class MovementSystem(System):
@@ -68,11 +69,13 @@ class InputSystem(System):
             try:
                 key = input.window.get_wch()
             except:
+                State.state = State.STAND
                 return
 
+            State.state = State.WALK
             if key == curses.KEY_UP:
                 velocity.velocity_y = -1
-            if key == curses.KEY_DOWN:
+            elif key == curses.KEY_DOWN:
                 velocity.velocity_y = 1
             elif key == curses.KEY_RIGHT:
                 velocity.velocity_x = 1
