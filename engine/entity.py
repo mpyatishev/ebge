@@ -11,10 +11,10 @@ class Entity:
         self.eid = eid
         self.name = name
         self.components = {}
+        self.fsm = None
 
-    def add_component(self, component):
-        component_class = get_class_name(component)
-        self.components[component_class] = component
+    def set_fsm(self, fsm):
+        self.fsm = fsm
 
 
 class EntityManager:

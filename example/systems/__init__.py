@@ -2,7 +2,6 @@
 
 
 from engine.system import System
-from engine.fsm import State
 
 
 class MovementSystem(System):
@@ -52,9 +51,6 @@ class RenderSystem(System):
             render.view.draw(render, time)
 
 
-import curses
-
-
 class InputSystem(System):
     def update(self, time):
         em = self.entity_manager
@@ -67,17 +63,17 @@ class InputSystem(System):
                 continue
 
             try:
-                key = input.window.get_wch()
+                key = input.get_key()
             except:
-                State.state = State.STAND
+                entity.fsm.change_state('stand')
                 return
 
-            State.state = State.WALK
-            if key == curses.KEY_UP:
+            entity.fsm.change_state('walk')
+            if key == input.KEY_UP:
                 velocity.velocity_y = -1
-            elif key == curses.KEY_DOWN:
+            elif key == input.KEY_DOWN:
                 velocity.velocity_y = 1
-            elif key == curses.KEY_RIGHT:
+            elif key == input.KEY_RIGHT:
                 velocity.velocity_x = 1
-            elif key == curses.KEY_LEFT:
+            elif key == input.KEY_LEFT:
                 velocity.velocity_x = -1
