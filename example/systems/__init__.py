@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
 
 from engine.system import System
+
+
+logger = logging.getLogger()
 
 
 class MovementSystem(System):

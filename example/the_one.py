@@ -3,6 +3,7 @@
 import curses
 import random
 # import sys
+import logging
 
 from time import sleep
 
@@ -12,6 +13,13 @@ import systems
 from engine.engine import Engine
 from engine.entity import EntityManager
 from engine.fsm import StateMachine
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler('the_one.log', mode='w')
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 
 class Image:
@@ -112,6 +120,8 @@ engine = Engine()
 
 
 def create_the_one(em, window):
+    logger.debug('creating the One')
+
     man = em.create_entity(name='Man')
     man_stand_view = ManStandImage(window)
     man_walk_view = ManWalkImage(window)
@@ -133,6 +143,7 @@ def create_the_one(em, window):
 
 
 def create_rocks(em, window, maxyx):
+    logger.debug('creating the Rocks')
     for i in range(5):
         rock = em.create_entity(name='Rock%s' % i)
         em.add_component(components.Position(x=random.uniform(0, maxyx[1]),

@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import copy
+# import copy
+import logging
 
 import utils
 
 
+logger = logging.getLogger()
+
+
 class EntityState:
-    def __init__(self):
-        self.components = {}
+    def __init__(self, components=None):
+        if components:
+            self.components = components
+        else:
+            self.components = {}
 
     def add(self, component):
         component_class = utils.get_class_name(component)
@@ -23,7 +30,7 @@ class EntityState:
         pass
 
     def clone(self):
-        return copy.copy(self)
+        return EntityState(self.components.copy())
 
     def get_components(self):
         return self.components
@@ -61,10 +68,12 @@ class StateMachine:
             return
 
         if self.current_state:
-            for component in self.current_state.get_components():
+            # logger.debug(self.current_state.get_components())
+            for component in self.current_state.get_components().values():
                 self.entity_manager.remove_component(component, self.entity)
 
         self.current_state = new_state
 
-        for component in self.current_state.get_components():
+        # logger.debug(self.current_state.get_components())
+        for component in self.current_state.get_components().values():
             self.entity_manager.add_component(component, self.entity)
