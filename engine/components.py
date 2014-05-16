@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from engine.component import Component
+
+class Component:
+    pass
 
 
 class Position(Component):

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import logging
 
-from engine.system import System
+class System:
+    def __init__(self, entity_manager=None):
+        self.entity_manager = entity_manager
 
-
-logger = logging.getLogger()
+    def update(self):
+        pass
 
 
 class MovementSystem(System):

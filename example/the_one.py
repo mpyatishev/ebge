@@ -7,9 +7,9 @@ import logging
 
 from time import sleep
 
-import components
-import systems
 
+from engine import components
+from engine import systems
 from engine.engine import Engine
 from engine.entity import EntityManager
 from engine.fsm import StateMachine
