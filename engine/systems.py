@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
+logger = logging.getLogger()
+
 
 class System:
     def __init__(self, entity_manager=None):
@@ -81,3 +85,23 @@ class InputSystem(System):
                 velocity.velocity_x = display.view.get_right_direction()
             elif key == input.input.key_left():
                 velocity.velocity_x = display.view.get_left_direction()
+
+
+class CollisionSystem(System):
+    def update(self, time):
+        em = self.entity_manager
+
+        for entity in em.get_entities_by_component_class('Velocity'):
+            velocity = em.get_component('Velocity', entity)
+            position = em.get_component('Position', entity)
+
+            for ent in em.get_entities_by_component_class('Position'):
+                if ent == entity:
+                    continue
+
+                ent_position = em.get_component('Position', ent)
+
+                if position.x + velocity.velocity_x == ent_position.x\
+                        and position.y + velocity.velocity_y == ent_position.y:
+                    velocity.velocity_x = 0
+                    velocity.velocity_y = 0

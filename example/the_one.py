@@ -145,30 +145,32 @@ def create_the_one(em, window):
     fsm_man.change_state('stand')
 
 
-def create_rocks(em, window, maxyx):
+def create_rocks(em, window):
     logger.debug('creating the Rocks')
+
+    maxyx = window.getmaxyx()
     for i in range(5):
         rock = em.create_entity(name='Rock%s' % i)
-        em.add_component(components.Position(x=random.uniform(0, maxyx[1]),
-                                             y=random.uniform(0, maxyx[0])),
+        em.add_component(components.Position(x=round(random.uniform(0, maxyx[1])),
+                                             y=round(random.uniform(0, maxyx[0]))),
                          rock)
         em.add_component(components.Display(view=RockImage(window)), rock)
 
 
 def main(window):
     window.clear()
-    window.addstr('test string')
-    maxyx = window.getmaxyx()
+    window.addstr('Starting.....')
     window.nodelay(True)
 
     em = EntityManager()
 
     engine.add_system(systems.InputSystem(em), 0)
-    engine.add_system(systems.MovementSystem(em), 1)
-    engine.add_system(systems.RenderSystem(em), 2)
+    engine.add_system(systems.CollisionSystem(em), 1)
+    engine.add_system(systems.MovementSystem(em), 2)
+    engine.add_system(systems.RenderSystem(em), 3)
 
     create_the_one(em, window)
-    create_rocks(em, window, maxyx)
+    create_rocks(em, window)
 
     time = 0
     while True:
