@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import curses
-
 from engine.component import Component
 
 
@@ -27,13 +25,5 @@ class Display(Component):
 
 
 class Input(Component):
-    KEY_UP = curses.KEY_UP
-    KEY_DOWN = curses.KEY_DOWN
-    KEY_LEFT = curses.KEY_LEFT
-    KEY_RIGHT = curses.KEY_RIGHT
-
-    def __init__(self, window=None):
-        self.window = window
-
-    def get_key(self):
-        return self.window.get_wch()
+    def __init__(self, input=None):
+        self.input = input

@@ -29,23 +29,21 @@ class MovementSystem(System):
 
 
 class RenderSystem(System):
-    def __init__(self, entity_manager=None, maxyx=(0, 0)):
-        super().__init__(entity_manager=entity_manager)
-        self.maxyx = maxyx
-
     def update(self, time):
         em = self.entity_manager
         for entity in em.get_entities_by_component_class('Display'):
             render = em.get_component('Display', entity)
             position = em.get_component('Position', entity)
 
-            if render.y >= self.maxyx[0]:
+            maxx = render.view.get_maxx()
+            maxy = render.view.get_maxy()
+            if render.y >= maxy:
                 render.y = 0
                 position.y = 0
             if render.y < 0:
                 render.y = 0
                 position.y = 0
-            if render.x >= self.maxyx[1]:
+            if render.x >= maxx:
                 render.x = 0
                 position.x = 0
             if render.x < 0:
@@ -62,22 +60,23 @@ class InputSystem(System):
         for entity in em.get_entities_by_component_class('Input'):
             input = em.get_component('Input', entity)
             velocity = em.get_component('Velocity', entity)
+            display = em.get_component('Display', entity)
 
             if not velocity:
                 continue
 
             try:
-                key = input.get_key()
+                key = input.input.get_key()
             except:
                 entity.fsm.change_state('stand')
                 return
 
             entity.fsm.change_state('walk')
-            if key == input.KEY_UP:
-                velocity.velocity_y = -1
-            elif key == input.KEY_DOWN:
-                velocity.velocity_y = 1
-            elif key == input.KEY_RIGHT:
-                velocity.velocity_x = 1
-            elif key == input.KEY_LEFT:
-                velocity.velocity_x = -1
+            if key == input.input.key_up():
+                velocity.velocity_y = display.view.get_up_direction()
+            elif key == input.input.key_down():
+                velocity.velocity_y = display.view.get_down_direction()
+            elif key == input.input.key_right():
+                velocity.velocity_x = display.view.get_right_direction()
+            elif key == input.input.key_left():
+                velocity.velocity_x = display.view.get_left_direction()

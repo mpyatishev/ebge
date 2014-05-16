@@ -13,6 +13,8 @@ import systems
 from engine.engine import Engine
 from engine.entity import EntityManager
 from engine.fsm import StateMachine
+from engine.providers.input import CursesInputProvider
+from engine.providers.display import CursesDisplayProvider
 
 
 logger = logging.getLogger()
@@ -22,9 +24,8 @@ fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
 
-class Image:
-    def __init__(self, window):
-        self.window = window
+class Image(CursesDisplayProvider):
+    pass
 
 
 class ManStandImage(Image):
@@ -130,9 +131,11 @@ def create_the_one(em, window):
     # em.add_component(components.Velocity(), man)
     # em.add_component(components.Display(view=man_stand_view), man)
 
+    input_provider = CursesInputProvider(window)
+
     fsm_man = StateMachine(em, man)
     fsm_man.create_state('stand')\
-        .add(components.Input(window=window))\
+        .add(components.Input(input_provider))\
         .add(components.Position(x=1, y=10))\
         .add(components.Velocity())\
         .add(components.Display(view=man_stand_view))
@@ -162,7 +165,7 @@ def main(window):
 
     engine.add_system(systems.InputSystem(em), 0)
     engine.add_system(systems.MovementSystem(em), 1)
-    engine.add_system(systems.RenderSystem(em, maxyx), 2)
+    engine.add_system(systems.RenderSystem(em), 2)
 
     create_the_one(em, window)
     create_rocks(em, window, maxyx)
