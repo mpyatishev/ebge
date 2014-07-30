@@ -101,7 +101,7 @@ class CollisionSystem(System):
 
                 ent_position = em.get_component('Position', ent)
 
-                if position.x + velocity.velocity_x == ent_position.x\
+                if position.x + 1 + velocity.velocity_x == ent_position.x\
                         and position.y + velocity.velocity_y == ent_position.y:
                     velocity.velocity_x = 0
                     velocity.velocity_y = 0
