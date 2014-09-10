@@ -16,6 +16,10 @@ class Entity:
     def set_fsm(self, fsm):
         self.fsm = fsm
 
+    @property
+    def id(self):
+        return self.eid
+
 
 class EntityManager:
     def __init__(self):

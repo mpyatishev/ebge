@@ -3,7 +3,7 @@
 # import copy
 import logging
 
-import utils
+from ..utils import get_class_name
 
 
 logger = logging.getLogger()
@@ -17,12 +17,12 @@ class EntityState:
             self.components = {}
 
     def add(self, component):
-        component_class = utils.get_class_name(component)
+        component_class = get_class_name(component)
         self.components[component_class] = component
         return self
 
     def remove(self, component):
-        component_class = utils.get_class_name(component)
+        component_class = get_class_name(component)
         del self.components[component_class]
         return self
 
