@@ -18,3 +18,6 @@ class Engine:
 
     def add_entity(self, entity):
         self.enities.append(entity)
+
+    def remove_entity(self, entity):
+        self.entities.remove(entity)

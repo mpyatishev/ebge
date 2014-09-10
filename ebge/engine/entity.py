@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from utils import get_class_name
+from ..utils import get_class_name
 
 
 class Entity:
@@ -31,7 +31,10 @@ class EntityManager:
 
     def remove_entity(self, entity):
         for components in self.components.values():
-            del components[entity.eid]
+            try:
+                del components[entity.eid]
+            except KeyError:
+                pass
         del self.entities[entity.eid]
 
     def get_new_eid(self):
